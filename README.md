@@ -182,7 +182,7 @@ Function.prototype.__proto__ === Object.prototype
 * JSONP： 利用<script>标签不受跨域限制的特点，缺点是只能支持get请求
 ```js
 function jsonp(url, jsonpCallback, success) {
-  const script = document.createElement('script)
+  const script = document.createElement('script')
   script.url = url
   script.async = true
   script.type 'text/javascript'
