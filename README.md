@@ -1,4 +1,3 @@
-# Web-front-end-interview
 ## CSS
 ### 1. 清除浮动，防止父级高度塌陷
 * 为父级div定义伪类:after和zoom
@@ -25,6 +24,47 @@
 * 同一个BFC下外边距会发生重叠：解决方法就是将元素放在不同的BFC容器中去
 * BFC可以包含浮动元素（清除浮动）
 * BFC可以阻止元素被浮动元素覆盖
+
+### 3. 居中布局
+* 水平居中
+  * 行内元素：text-align:center
+  * 块级元素：margin: 0 auto
+  * absolute + transform
+  * flex + justify-content: center
+* 垂直居中
+  * line-height + height
+  * absolute + transform
+  * flex + align-items: center
+  * table (vertical-align: middle)
+* 水平垂直居中
+  * absolute + transform
+    ```css
+    .inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%)
+    }
+    ```
+  * flex + justify-content + align-items
+    ```css
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    ```
+### 4. css实现三角形
+```css
+div {
+  width: 0;
+  height: 0;
+  border-top: 40px solid #000;
+  border-right: 40px solid transparent;
+  border-left: 40px solid transparent;
+  border-bottom: 40px solid transparent;
+}
+```
 
 ## JS
 ### 1. 防抖和节流函数
@@ -126,4 +166,40 @@ foo.prototype.__proto__ === Object.prototype
 foo.__proto__ === Function.prototype
 
 Function.prototype.__proto__ === Object.prototype
+```
+
+## http/https
+### 1. 缓存
+分为强缓存和协商缓存，两种缓存分别通过Http报文头部不同的字段进行控制
+* Cache-control / Expires : 浏览器判断缓存是否过期，未过期时，直接使用强缓存，Cache-control的max-age优先级高于Expires
+* 当缓存已经过期时，使用协商缓存：
+  * 唯一标志方案：Etag（response携带） & If-None-Match（request携带，上一次返回的Etag）：服务器判断资源是否修改
+  * 最后一次修改时间：Last-Modified（response） & If-Modified-Since（request，上一次放回的Last-Modified）
+    * 如果一致，则直接返回304，通知浏览器使用缓存
+    * 果不一致，则服务器返回新的资源
+
+### 2. 跨域
+* JSONP： 利用<script>标签不受跨域限制的特点，缺点是只能支持get请求
+```js
+function jsonp(url, jsonpCallback, success) {
+  const script = document.createElement('script)
+  script.url = url
+  script.async = true
+  script.type 'text/javascript'
+  window[jsonpCallback] = function (data) {
+    success && success(data)
+  }
+  document.body.appendChild(script)
+}
+```
+
+* CROS： 基本思想是使用自定义的HTTP头部允许浏览器和服务器之间的交互
+一般都是由服务器端开启：
+  Access-Control-Allow-Origin：指定授权访问的域
+  Access-Control-Allow-Methods：授权请求的方法（GET / POST / PUT / DELETE / OPTIONS 等）
+
+* HTML5的新API：postMessage
+```js
+window.frames[0].postMessage(data, 'http://www.aaa.com')
+window.addEventListener('message', callback)
 ```
